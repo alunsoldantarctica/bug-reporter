@@ -1,5 +1,14 @@
 # @alunsoldantarctica/bug-reporter
 
+[![npm version](https://img.shields.io/npm/v/@alunsoldantarctica/bug-reporter?logo=npm&color=cb3837)](https://www.npmjs.com/package/@alunsoldantarctica/bug-reporter)
+[![npm downloads](https://img.shields.io/npm/dm/@alunsoldantarctica/bug-reporter?logo=npm&color=cb3837)](https://www.npmjs.com/package/@alunsoldantarctica/bug-reporter)
+[![GitHub stars](https://img.shields.io/github/stars/alunsoldantarctica/bug-reporter?logo=github)](https://github.com/alunsoldantarctica/bug-reporter/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/alunsoldantarctica/bug-reporter?logo=github)](https://github.com/alunsoldantarctica/bug-reporter/network/members)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+![TypeScript](https://img.shields.io/badge/TypeScript-ready-3178c6?logo=typescript&logoColor=white)
+![React](https://img.shields.io/badge/React-peer-61dafb?logo=react&logoColor=111827)
+![Cloudflare Workers](https://img.shields.io/badge/Cloudflare%20Workers-adapter-f38020?logo=cloudflare&logoColor=white)
+
 Bug reporting UI and adapters that turn vague product feedback into
 developer-ready tickets.
 
