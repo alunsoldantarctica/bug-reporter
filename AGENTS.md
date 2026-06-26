@@ -1,7 +1,7 @@
 # Agent Install Instructions
 
 Use this file when an AI coding agent is asked to install or adapt
-`@alunsoldantarctica/bug-reporter`.
+`@alunsoldgroup/bug-reporter`.
 
 ## Goal
 
@@ -12,13 +12,13 @@ PostHog replay links, and optional Linear filing.
 ## Install
 
 ```sh
-npm install @alunsoldantarctica/bug-reporter
+npm install @alunsoldgroup/bug-reporter
 ```
 
 If the repo uses pnpm:
 
 ```sh
-pnpm add @alunsoldantarctica/bug-reporter
+pnpm add @alunsoldgroup/bug-reporter
 ```
 
 ## Required Decisions
@@ -41,7 +41,7 @@ Create `src/pages/api/bug-report.ts`:
 
 ```ts
 import type { APIRoute } from "astro";
-import { createAstroCloudflareBugReportHandler } from "@alunsoldantarctica/bug-reporter";
+import { createAstroCloudflareBugReportHandler } from "@alunsoldgroup/bug-reporter";
 
 export const prerender = false;
 
@@ -79,7 +79,7 @@ AI_GATEWAY_TOKEN=<cloudflare-ai-gateway-token>
 ## Client Submitter
 
 ```ts
-import { createHttpBugReportAdapter } from "@alunsoldantarctica/bug-reporter";
+import { createHttpBugReportAdapter } from "@alunsoldgroup/bug-reporter";
 
 const adapter = createHttpBugReportAdapter("/api/bug-report");
 

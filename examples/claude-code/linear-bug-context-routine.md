@@ -13,7 +13,7 @@ developer-ready context before implementation.
 ## Routine
 
 ```md
-You are reviewing a Linear bug report created by @alunsoldantarctica/bug-reporter.
+You are reviewing a Linear bug report created by @alunsoldgroup/bug-reporter.
 
 Goal:
 Add enough codebase context to the Linear issue that a developer or coding agent

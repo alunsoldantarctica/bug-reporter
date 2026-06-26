@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { createAstroCloudflareBugReportHandler } from "@alunsoldantarctica/bug-reporter";
+import { createAstroCloudflareBugReportHandler } from "@alunsoldgroup/bug-reporter";
 
 export const prerender = false;
 

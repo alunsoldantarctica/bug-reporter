@@ -1,7 +1,7 @@
-# @alunsoldantarctica/bug-reporter
+# @alunsoldgroup/bug-reporter
 
-[![npm version](https://img.shields.io/npm/v/@alunsoldantarctica/bug-reporter?logo=npm&color=cb3837)](https://www.npmjs.com/package/@alunsoldantarctica/bug-reporter)
-[![npm downloads](https://img.shields.io/npm/dm/@alunsoldantarctica/bug-reporter?logo=npm&color=cb3837)](https://www.npmjs.com/package/@alunsoldantarctica/bug-reporter)
+[![npm version](https://img.shields.io/npm/v/@alunsoldgroup/bug-reporter?logo=npm&color=cb3837)](https://www.npmjs.com/package/@alunsoldgroup/bug-reporter)
+[![npm downloads](https://img.shields.io/npm/dm/@alunsoldgroup/bug-reporter?logo=npm&color=cb3837)](https://www.npmjs.com/package/@alunsoldgroup/bug-reporter)
 [![GitHub stars](https://img.shields.io/github/stars/alunsoldantarctica/bug-reporter?logo=github)](https://github.com/alunsoldantarctica/bug-reporter/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/alunsoldantarctica/bug-reporter?logo=github)](https://github.com/alunsoldantarctica/bug-reporter/network/members)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -125,7 +125,7 @@ depending on any production app.
 ## Install
 
 ```sh
-npm install @alunsoldantarctica/bug-reporter
+npm install @alunsoldgroup/bug-reporter
 ```
 
 Peer dependencies:
@@ -139,7 +139,7 @@ npm install react react-dom
 Send reports to your own server endpoint:
 
 ```ts
-import { createHttpBugReportAdapter } from "@alunsoldantarctica/bug-reporter";
+import { createHttpBugReportAdapter } from "@alunsoldgroup/bug-reporter";
 
 const bugReporter = createHttpBugReportAdapter("/api/bug-report");
 
@@ -164,7 +164,7 @@ Create an API route:
 ```ts
 // src/pages/api/bug-report.ts
 import type { APIRoute } from "astro";
-import { createAstroCloudflareBugReportHandler } from "@alunsoldantarctica/bug-reporter";
+import { createAstroCloudflareBugReportHandler } from "@alunsoldgroup/bug-reporter";
 
 export const prerender = false;
 

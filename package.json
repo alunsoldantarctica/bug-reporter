@@ -1,5 +1,5 @@
 {
-  "name": "@alunsoldantarctica/bug-reporter",
+  "name": "@alunsoldgroup/bug-reporter",
   "version": "0.1.0",
   "type": "module",
   "description": "Adapter-first bug reporter kit with optional voice, element capture, PostHog replay links, and Linear filing.",

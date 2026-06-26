@@ -1,11 +1,11 @@
-# @alunsoldantarctica/bug-reporter
+# @alunsoldgroup/bug-reporter
 
 Bug reporting UI and adapters for developer-ready tickets.
 
 Package:
 
 ```sh
-npm install @alunsoldantarctica/bug-reporter
+npm install @alunsoldgroup/bug-reporter
 ```
 
 Repository:
@@ -60,7 +60,7 @@ Use browser code only to collect report context. Use a server route to:
 Client:
 
 ```ts
-import { createHttpBugReportAdapter } from "@alunsoldantarctica/bug-reporter";
+import { createHttpBugReportAdapter } from "@alunsoldgroup/bug-reporter";
 
 const bugReporter = createHttpBugReportAdapter("/api/bug-report");
 
@@ -79,7 +79,7 @@ Astro on Cloudflare Workers:
 
 ```ts
 import type { APIRoute } from "astro";
-import { createAstroCloudflareBugReportHandler } from "@alunsoldantarctica/bug-reporter";
+import { createAstroCloudflareBugReportHandler } from "@alunsoldgroup/bug-reporter";
 
 export const prerender = false;
 
@@ -106,7 +106,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
 When asked to integrate this package:
 
-1. Install `@alunsoldantarctica/bug-reporter`.
+1. Install `@alunsoldgroup/bug-reporter`.
 2. Add a server route. Do not call Linear or AI Gateway from browser code.
 3. Gate the route with staff/admin auth.
 4. Add the client reporter UI in the host app.
