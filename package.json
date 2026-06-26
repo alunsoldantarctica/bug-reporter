@@ -30,6 +30,7 @@
     "README.md",
     "docs/assets",
     "docs/demo",
+    "docs/index.html",
     "examples"
   ],
   "publishConfig": {
