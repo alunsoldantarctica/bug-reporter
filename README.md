@@ -1,43 +1,108 @@
 # @alunsoldantarctica/bug-reporter
 
-Adapter-first bug reporter for product/admin apps.
+Bug reporting UI and adapters that turn vague product feedback into
+developer-ready tickets.
 
-It packages the flow Expedition Insure uses internally:
+Use it when you want staff, QA, or trusted beta users to report bugs with useful
+developer context: the page URL, selected UI elements, optional screenshots,
+optional voice narration, and optional PostHog replay links.
 
-- a floating public-site reporter
-- an admin/header report button
-- optional element picking and screenshot upload
-- optional microphone narration
-- optional PostHog session replay linking
-- Linear issue filing through a server adapter
+Most in-app bug reporters stop at a text box. This package captures the context
+developers actually need: the page, the selected UI element, browser details,
+screenshots, optional voice narration, and optional replay links. The server
+adapter turns that into a Linear issue that is ready for triage, automation, or
+direct implementation.
 
-The package is intentionally backend-agnostic. The browser collects report
-context; your server owns auth, secrets, ticket creation, storage, and any
-privacy policy decisions.
+The package is adapter-first. You can use the provided Astro on Cloudflare
+Workers adapter, or plug the browser payload into your own backend, issue
+tracker, storage, and auth stack.
+
+## Why Integrate It
+
+- **Fewer low-signal tickets**: every report can include URL, selector, visible
+  text, viewport, user agent, screenshots, replay id, and voice transcript.
+- **Works with your stack**: browser collection is separate from server filing.
+  Bring your own auth, database, storage, queue, issue tracker, and redaction.
+- **Safe secret boundary**: Linear, PostHog, and AI Gateway credentials stay on
+  your server. Static demos can use mock submitters.
+- **Agent-ready output**: tickets include structured context that a developer,
+  Claude Code routine, or coding agent can map back to owning files.
+- **Optional integrations**: voice, PostHog, and transcription degrade
+  independently. Text-only reporting still works.
+- **Small surface area**: core package exports typed payloads, browser helpers,
+  an HTTP adapter, and an Astro/Cloudflare route helper.
+
+## Integration Model
+
+```txt
+Browser reporter
+  -> captures page + element + optional files + optional replay id
+  -> POST /api/bug-report
+  -> your server checks auth and redacts
+  -> Linear issue + attachments + optional transcript
+  -> optional Claude Code enrichment comment
+```
+
+## Demo
+
+Try the static GitHub Pages demo:
+
+https://alunsoldantarctica.github.io/bug-reporter/
+
+The demo uses a mock submitter. It is safe to run on GitHub Pages because it does
+not contain Linear, PostHog, or AI Gateway credentials.
+
+## What It Supports
+
+- Floating bug reporter for public pages
+- Header/admin report button flows
+- Visual element picking
+- Optional screenshot and element metadata capture
+- Optional microphone narration
+- WAV conversion for broader browser/tool compatibility
+- Optional PostHog session replay links
+- Linear issue creation through a server adapter
+- Astro + Cloudflare Workers route helper
+- Claude Code routine example for enriching tickets with codebase context
+
+## What Your Team Gets
+
+Instead of this:
+
+```txt
+"Checkout is weird on mobile"
+```
+
+You get this:
+
+```txt
+Title: [site] /checkout: Submit button disabled after changing dates
+URL: https://app.example.com/checkout
+Selector: button[data-testid="checkout-submit"]
+Visible text: Complete booking
+Viewport: 390x844
+Replay: https://us.posthog.com/project/123/replay/...
+Transcript: "I changed the departure date, then the button stayed disabled."
+Attachments: element screenshot, optional voice clip
+```
+
+That is enough for an engineer or agent to search the codebase, identify likely
+owning components, reproduce the flow, and propose tests.
 
 ## Feature Walkthrough
 
-The GIFs below use a plausible expedition-insurance site mock so the behavior is
-clear without exposing a production customer surface.
+The GIFs use a fictional expedition-insurance site so behavior is clear without
+depending on any production app.
 
 ### Floating Reporter
-
-The launcher opens into a report form, can start a recording, links PostHog when
-available, and submits to your configured endpoint.
 
 ![Floating reporter flow](./docs/assets/floating-reporter.gif)
 
 ### Element Picker
 
-The picker records the affected selector and can send an element screenshot as
-an attachment.
-
 ![Element picker flow](./docs/assets/element-picker.gif)
 
 ### Optional Integrations
-
-Linear, PostHog, and voice transcription are independent switches. Secrets stay
-server-side.
 
 ![Integration setup flow](./docs/assets/integrations.gif)
 
@@ -53,10 +118,9 @@ Peer dependencies:
 npm install react react-dom
 ```
 
-## Client Usage
+## Quick Start
 
-Use the HTTP adapter when your app submits reports to a route such as
-`/api/bug-report`.
+Send reports to your own server endpoint:
 
 ```ts
 import { createHttpBugReportAdapter } from "@alunsoldantarctica/bug-reporter";
@@ -74,12 +138,12 @@ await bugReporter.submit({
 });
 ```
 
-When the payload includes files, the adapter automatically sends
-`multipart/form-data`. Otherwise it sends JSON.
+When files are present, the HTTP adapter sends `multipart/form-data`.
+Otherwise it sends JSON.
 
 ## Astro on Cloudflare Workers
 
-Add an API route:
+Create an API route:
 
 ```ts
 // src/pages/api/bug-report.ts
@@ -98,117 +162,87 @@ export const POST: APIRoute = async ({ request, locals }) => {
 };
 ```
 
-The included example lives at
-`examples/astro-cloudflare/src/pages/api/bug-report.ts`.
+Full example:
 
-## GitHub Pages Demo
+`examples/astro-cloudflare/src/pages/api/bug-report.ts`
 
-Yes, GitHub Pages can host a try-it page for the floating reporter.
+## Cloudflare Bindings
 
-Use it for browser-only behavior:
+Required for Linear filing:
 
-- opening the launcher
-- filling a report
-- selecting visual elements
-- showing optional replay/voice toggles
-- submitting through a mock adapter
-
-Do not put production API keys on `github.io`. GitHub Pages is static hosting,
-so Linear and AI Gateway calls must go through a real server route such as a
-Cloudflare Worker.
-
-This package includes a static mock demo:
-
-`docs/demo/index.html`
-
-For a public docs site, publish that folder with GitHub Pages. The production
-version should swap the mock submit handler for:
-
-```ts
-createHttpBugReportAdapter("https://your-worker.example.com/api/bug-report")
+```txt
+LINEAR_API_TOKEN
 ```
 
-## Example Workflow
+Optional:
 
-This is the intended product loop for an Astro site running on Cloudflare
-Workers.
+```txt
+LINEAR_TEAM_KEY=ENG
+LINEAR_LABELS=bug,reported-from-app
+POSTHOG_PROJECT_ID=12345
+POSTHOG_HOST=https://us.posthog.com
+AI_GATEWAY_URL=https://gateway.ai.cloudflare.com/v1/<account>/<gateway>
+AI_GATEWAY_TOKEN=<cloudflare-ai-gateway-token>
+```
 
-### 1. Staff Sees the Reporter on Public Pages
+`AI_GATEWAY_URL` and `AI_GATEWAY_TOKEN` enable best-effort audio transcription
+through Groq Whisper via Cloudflare AI Gateway. Provider keys stay server-side.
 
-Render the launcher on every public page, but gate visibility to authenticated
-staff/admin users. Anonymous visitors never download or see the reporter UI.
+## Public Demo vs Production
 
-Typical checks:
+GitHub Pages can host the floating-button demo because it is static browser
+code. It cannot safely create real Linear tickets or transcribe audio because
+those require secrets.
 
-- staff session cookie exists
-- signed-in role is `admin` or `staff`
-- optional local role hint to avoid loading the bundle for anonymous traffic
+Recommended split:
 
-### 2. Reporter Selects Visual Elements
+- GitHub Pages: static demo, mock submitter
+- Production app: authenticated UI
+- Cloudflare Worker/Astro route: Linear, PostHog, AI Gateway, redaction, auth
 
-The reporter clicks "pick element", then selects the broken UI on the page.
-Capture:
+## Suggested Bug Workflow
 
-- CSS selector
-- visible text
-- outer HTML, capped/redacted by the host app
-- bounding rect and viewport size
-- optional element screenshot
+1. Render the reporter only for trusted users.
+2. Reporter selects the broken UI element.
+3. Reporter adds text, severity, optional voice, optional replay.
+4. Server creates the Linear issue and attaches screenshots/audio.
+5. Automation enriches the ticket with codebase context.
 
-That context matters because a bug report like "button broken" becomes
-"button broken on `/quote`, selector `.operator-card[data-slug=quark]`, visible
-text `Quark Expeditions`, viewport 390x844."
+The value is in the metadata. A vague report like "button broken" becomes:
 
-### 3. Reporter Adds Optional Replay and Voice
+```txt
+URL: /quote
+Selector: .operator-card[data-slug="quark"]
+Visible text: Quark Expeditions
+Viewport: 390x844
+PostHog replay: https://...
+Voice transcript: "I changed dates and the operator disappeared."
+```
 
-Optional additions:
+## Claude Code Ticket Enrichment
 
-- PostHog replay session id, when PostHog is present
-- microphone narration, converted to WAV client-side
-- voice transcript, generated server-side through Cloudflare AI Gateway
-
-All optional features degrade independently. A missing mic permission should not
-block ticket creation.
-
-### 4. Server Creates the Linear Ticket
-
-The Astro route receives JSON or multipart form data, checks staff auth, files a
-Linear issue, uploads attachments to Linear, and adds replay/transcript links.
-
-The resulting ticket has:
-
-- page URL and surface
-- selected element metadata
-- screenshot/audio attachments
-- PostHog replay URL when configured
-- severity and source
-
-### 5. Claude Code Enriches the Ticket
-
-After Linear creation, run a Claude Code routine that reads the ticket and adds
-codebase context before a person or agent implements it.
-
-Routine example:
+This repo includes an example routine:
 
 `examples/claude-code/linear-bug-context-routine.md`
 
-Suggested automation:
+The intended automation:
 
-1. Linear webhook fires when a new bug-reporter issue is created.
-2. Worker/GitHub Action starts Claude Code in the repo.
-3. Routine fetches Linear issue details and attachments.
-4. Routine searches the codebase for matching routes, text, selectors, testids,
-   API calls, and analytics events.
-5. Routine posts a concise Linear comment with likely owning files,
-   reproduction path, first hypothesis, and suggested tests.
+1. Linear webhook fires for new bug-reporter tickets.
+2. A Worker, CI job, or local script starts Claude Code in your repo.
+3. The routine reads the Linear issue, comments, screenshots, transcript, and
+   replay URL.
+4. It searches for matching routes, visible text, selectors, test ids, and
+   analytics events.
+5. It posts a concise Linear comment with likely owning files, reproduction
+   path, first hypothesis, confidence, and suggested tests.
 
-Example enriched ticket comment:
+Example enrichment:
 
 ```md
 Likely owning surface:
 - `src/pages/quote.astro`
-- `src/components/react/QuoteWizard.tsx`
-- `src/components/react/quote-wizard/Step3Operator.tsx`
+- `src/components/QuoteWizard.tsx`
+- `src/components/quote-wizard/Step3Operator.tsx`
 
 Why:
 - Reported URL is `/quote`.
@@ -226,59 +260,21 @@ Suggested tests:
 Confidence: medium. Need replay check before implementation.
 ```
 
-## Cloudflare Bindings
-
-Required for Linear filing:
-
-```txt
-LINEAR_API_TOKEN
-```
-
-Optional:
-
-```txt
-LINEAR_TEAM_KEY=EXP
-LINEAR_LABELS=bug
-POSTHOG_PROJECT_ID=12345
-POSTHOG_HOST=https://us.posthog.com
-AI_GATEWAY_URL=https://gateway.ai.cloudflare.com/v1/<account>/<gateway>
-AI_GATEWAY_TOKEN=<cloudflare-ai-gateway-token>
-```
-
-`AI_GATEWAY_URL` and `AI_GATEWAY_TOKEN` enable audio transcription through Groq
-Whisper via Cloudflare AI Gateway. The package never sends provider API keys to
-the browser.
-
-## What the Astro Adapter Does
-
-`createAstroCloudflareBugReportHandler`:
-
-1. optionally runs your `requireAuth` function
-2. accepts JSON or multipart submissions
-3. creates a Linear issue
-4. formats a PostHog replay URL when `replaySessionId` and `POSTHOG_PROJECT_ID`
-   are present
-5. uploads audio/images to Linear as issue comments
-6. transcribes audio best-effort when AI Gateway env vars are present
-
-Attachment upload and transcription failures throw for now. Wrap the handler or
-provide a custom adapter if your product must file the issue even when
-attachments fail.
-
 ## Security Model
 
-Do not expose ticketing or transcription keys to the browser.
+Do not expose ticketing, analytics, or transcription keys to the browser.
 
-Recommended setup:
+Recommended production rules:
 
-- gate the route with your staff/admin session
-- redact sensitive fields before ticket creation
-- keep `LINEAR_API_TOKEN` and `AI_GATEWAY_TOKEN` in Cloudflare secrets
-- only enable PostHog replay links for trusted internal reporters
-- disclose microphone recording in your product UI
+- Gate the reporting route with staff/admin auth.
+- Redact sensitive fields before ticket creation.
+- Store `LINEAR_API_TOKEN` and `AI_GATEWAY_TOKEN` in platform secrets.
+- Treat PostHog replay links as internal-only.
+- Make microphone recording opt-in.
+- Disclose recording and retention behavior in your UI.
 
-The package provides plumbing; the host app remains responsible for consent,
-retention, authorization, and PII handling.
+The package handles plumbing. Your app remains responsible for consent,
+authorization, retention, and PII handling.
 
 ## Public API
 
@@ -301,11 +297,9 @@ CapturedElement
 PostHogLike
 ```
 
-## Publishing
-
-This package is public-npm ready:
+## Publish
 
 ```sh
-pnpm exec tsc -p apps/bug-reporter/tsconfig.json
+pnpm run build
 npm publish --access public
 ```
