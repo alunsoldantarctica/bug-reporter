@@ -52,6 +52,13 @@ https://alunsoldantarctica.github.io/bug-reporter/
 The demo uses a mock submitter. It is safe to run on GitHub Pages because it does
 not contain Linear, PostHog, or AI Gateway credentials.
 
+## AI Agent Docs
+
+For LLM crawlers and coding agents:
+
+- [`llms.txt`](./llms.txt) — compact package summary and integration guidance
+- [`AGENTS.md`](./AGENTS.md) — step-by-step agent install instructions
+
 ## What It Supports
 
 - Floating bug reporter for public pages

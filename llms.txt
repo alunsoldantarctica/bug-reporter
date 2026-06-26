@@ -1,0 +1,116 @@
+# @alunsoldantarctica/bug-reporter
+
+Bug reporting UI and adapters for developer-ready tickets.
+
+Package:
+
+```sh
+npm install @alunsoldantarctica/bug-reporter
+```
+
+Repository:
+
+https://github.com/alunsoldantarctica/bug-reporter
+
+Demo:
+
+https://alunsoldantarctica.github.io/bug-reporter/
+
+## What This Package Does
+
+It helps web apps collect high-signal bug reports from staff, QA, or trusted
+users. Reports can include:
+
+- page URL and surface
+- CSS selector for the affected element
+- selected element text/HTML/viewport metadata
+- screenshots
+- optional microphone narration
+- optional PostHog replay session id
+- optional Linear issue creation through a server adapter
+- optional Claude Code ticket enrichment workflow
+
+## Best Fit
+
+Use this when integrating an in-app bug reporter into:
+
+- React apps
+- Astro apps
+- Cloudflare Workers deployments
+- admin panels
+- staff-only public-site overlays
+- QA/beta feedback flows
+- Linear-based engineering workflows
+
+## Security Boundary
+
+Never expose Linear, PostHog personal API, or AI Gateway secrets in browser code.
+
+Use browser code only to collect report context. Use a server route to:
+
+- authenticate staff/admin users
+- redact sensitive data
+- create Linear issues
+- upload attachments
+- transcribe audio
+- format PostHog replay URLs
+
+## Quick Integration
+
+Client:
+
+```ts
+import { createHttpBugReportAdapter } from "@alunsoldantarctica/bug-reporter";
+
+const bugReporter = createHttpBugReportAdapter("/api/bug-report");
+
+await bugReporter.submit({
+  source: "site",
+  surface: window.location.pathname,
+  url: window.location.href,
+  message: "Submit button stays disabled after changing dates.",
+  severity: "medium",
+  userAgent: navigator.userAgent,
+  replaySessionId: window.posthog?.get_session_id?.(),
+});
+```
+
+Astro on Cloudflare Workers:
+
+```ts
+import type { APIRoute } from "astro";
+import { createAstroCloudflareBugReportHandler } from "@alunsoldantarctica/bug-reporter";
+
+export const prerender = false;
+
+export const POST: APIRoute = async ({ request, locals }) => {
+  const handle = createAstroCloudflareBugReportHandler({
+    env: locals.runtime.env,
+    requireAuth: (req) => Boolean(req.headers.get("cookie")?.includes("staff_session=")),
+  });
+
+  return handle(request);
+};
+```
+
+## Useful Files
+
+- `README.md` — full install and integration docs
+- `docs/demo/index.html` — static GitHub Pages demo
+- `examples/astro-cloudflare/src/pages/api/bug-report.ts` — Astro route example
+- `examples/claude-code/linear-bug-context-routine.md` — routine for enriching Linear tickets
+- `src/index.ts` — core client adapter, types, audio helpers
+- `src/adapters/astro-cloudflare.ts` — server adapter for Astro on Cloudflare Workers
+
+## Agent Instructions
+
+When asked to integrate this package:
+
+1. Install `@alunsoldantarctica/bug-reporter`.
+2. Add a server route. Do not call Linear or AI Gateway from browser code.
+3. Gate the route with staff/admin auth.
+4. Add the client reporter UI in the host app.
+5. If PostHog is present, pass `window.posthog.get_session_id()`.
+6. If voice is enabled, keep it opt-in and disclose recording.
+7. Add a Linear webhook or scheduled routine to run the Claude Code enrichment workflow.
+8. Verify with one mock report and one real authenticated report.
