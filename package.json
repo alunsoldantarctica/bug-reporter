@@ -1,0 +1,52 @@
+{
+  "name": "@alunsoldantarctica/bug-reporter",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Adapter-first bug reporter kit with optional voice, element capture, PostHog replay links, and Linear filing.",
+  "license": "MIT",
+  "homepage": "https://github.com/alunsoldantarctica/bug-reporter#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alunsoldantarctica/bug-reporter.git"
+  },
+  "keywords": [
+    "bug-report",
+    "feedback",
+    "astro",
+    "cloudflare-workers",
+    "linear",
+    "posthog",
+    "voice"
+  ],
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "docs/assets",
+    "docs/demo",
+    "examples"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "prepublishOnly": "pnpm run build"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "typescript": "^5.6.0"
+  }
+}
